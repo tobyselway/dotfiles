@@ -22,6 +22,7 @@ in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      hyprland.nixosModules.default
       <home-manager/nixos>
     ];
 
@@ -62,6 +63,8 @@ in {
   services.xserver.enable = true;
 
   services.xserver.displayManager.sddm.enable = true;
+
+  programs.hyprland.enable = true;
 
   # Configure keymap in X11
   services.xserver = {
@@ -307,6 +310,8 @@ in {
     };
 
     programs = {
+
+      home-manager.enable = true;
 
       waybar = {
         enable = true;
