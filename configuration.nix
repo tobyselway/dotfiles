@@ -62,7 +62,7 @@ in {
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
-  services.xserver.displayManager.sddm.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
 
   programs.hyprland.enable = true;
 
@@ -113,7 +113,71 @@ in {
 
     home.packages = with pkgs; [
       wofi
+
+      /* Dev */
+      nodejs
+      nodePackages.vue-cli
+      php82
+      php82Packages.composer
     ];
+
+    # Wofi
+    home.file."/home/toby/.config/wofi/style.css".text = ''
+      window {
+          margin: 0;
+          border: 0;
+          background-color: transparent;
+      }
+
+      #input {
+          padding: 8px 16px;
+          border: 4px solid #595959;
+          background-color: #202020;
+          border-radius: 12px;
+          margin-bottom: 12px;
+          font-size: 16pt;
+          font-weight: 500;
+      }
+
+      #inner-box {
+          border: 0;
+          background-color: transparent;
+      }
+
+      #outer-box {
+          border: 0;
+          background-color: transparent;
+      }
+
+      #scroll {
+          margin: 0;
+          background-color: transparent;
+      }
+
+      #entry {
+          margin: 4px 0;
+          border-radius: 10px;
+          border: 2px solid #595959;
+          background-color: #202020;
+          padding: 12px 12px;
+      }
+
+      #entry:selected {
+          border: 2px solid #33ccff;
+      }
+
+      #text {
+          color: #888888;
+          font-size: 12pt;
+          font-weight: 500;
+          margin-left: 8px;
+      }
+
+      #text:selected {
+          color: #ffffff;
+      }
+
+    '';
 
     # Hyprland
     wayland.windowManager.hyprland = {
@@ -257,7 +321,7 @@ in {
         bind = $mainMod, M, exit,
         bind = $mainMod, E, exec, nemo
         bind = $mainMod, F, togglefloating, 
-        bind = $mainMod, space, exec, wofi --show drun
+        bind = $mainMod, space, exec, wofi --show drun -s /home/toby/.config/wofi/style.css --width=30% --height=32% --prompt=" Launch" --term=alacritty --matching=fuzzy --no-actions --allow-images
         # bind = $mainMod, space, exec, ulauncher
         bind = $mainMod, P, pseudo, # dwindle
         bind = $mainMod, J, togglesplit, # dwindle
@@ -423,6 +487,10 @@ in {
       };
 
     };
+
+    home.sessionPath = [
+      "/home/toby/.config/composer/vendor/bin"
+    ];
 
     home.stateVersion = "22.11";
   };
