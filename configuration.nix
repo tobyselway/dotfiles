@@ -105,13 +105,19 @@ in {
     extraGroups = [ "networkmanager" "wheel" ];
   };
 
+  # Disable sudo password for users of wheel
+  security.sudo.wheelNeedsPassword = false;
+
   home-manager.users.toby = { pkgs, ... }: {
     
     imports = [
       hyprland.homeManagerModules.default
     ];
 
+    fonts.fontconfig.enable = true;
+
     home.packages = with pkgs; [
+      /* UI */
       wofi
 
       /* Dev */
@@ -119,6 +125,9 @@ in {
       nodePackages.vue-cli
       php82
       php82Packages.composer
+
+      /* Fonts */
+      (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     ];
 
     # Wofi
@@ -206,7 +215,8 @@ in {
 
         # Execute your favorite apps at launch
         # exec-once = waybar & hyprpaper & firefox
-        exec-once = waybar & /nix/store/$(ls -la /nix/store | grep 'polkit-kde' | grep '4096' | awk '{print $9}' | sed -n '$p')/libexec/polkit-kde-authentication-agent-1 &
+        # exec-once = waybar & /nix/store/$(ls -la /nix/store | grep 'polkit-kde' | grep '4096' | awk '{print $9}' | sed -n '$p')/libexec/polkit-kde-authentication-agent-1 &
+        exec-once = waybar &
 
         # Source a file (multi-file configs)
         # source = ~/.config/hypr/myColors.conf
@@ -234,10 +244,10 @@ in {
         general {
             # See https://wiki.hyprland.org/Configuring/Variables/ for more
 
-            gaps_in = 6
+            gaps_in = 8
             gaps_out = 10
-            border_size = 4
-            col.active_border = rgba(33ccffee) rgba(00ff99ee) 45deg
+            border_size = 5
+            col.active_border = rgba(ec8d3cff) rgba(f0c674ff) 45deg
             col.inactive_border = rgba(595959aa)
 
             layout = master
@@ -251,7 +261,7 @@ in {
             blur_size = 4
             blur_passes = 1
             blur_new_optimizations = on
-            active_opacity = 0.9
+            active_opacity = 1.0
             inactive_opacity = 0.8
 
             drop_shadow = no
@@ -303,7 +313,9 @@ in {
         # windowrulev2 = float,class:^(kitty)$,title:^(kitty)$
         # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
 
-        windowrule = opacity 1.0 override 0.8 override,^(chromium-browser)$
+        windowrule = opacity 1.0 override 0.9 override,^(chromium-browser)$
+        windowrule = opacity 0.8 override 0.7 override,^(alacritty)$
+        windowrule = opacity 0.9 override 0.8 override,^(codium-url-handler)$
         windowrule = float,^(com.github.wwmm.easyeffects)$
 
         windowrule = noborder,^(ulauncher)$
@@ -325,6 +337,7 @@ in {
         # bind = $mainMod, space, exec, ulauncher
         bind = $mainMod, P, pseudo, # dwindle
         bind = $mainMod, J, togglesplit, # dwindle
+        bind = $mainMod SHIFT, P, exec, wlogout
 
         # Move focus with mainMod + arrow keys
         bind = $mainMod, left, movefocus, l
@@ -436,13 +449,15 @@ in {
             padding: 0 10px;
             border-radius: 20px;
             background-color: #303030;
+            color: white;
           }
 
           #clock {
             margin: 4px 0;
             padding: 0 10px;
             border-radius: 20px;
-            background-color: #303030;
+            background-color: #eec17c;
+            color: white;
           }
 
           #network {
@@ -450,15 +465,21 @@ in {
             padding: 0 10px;
             border-radius: 20px;
             background-color: #303030;
+            color: white;
           }
         '';
       };
 
       fish = {
         enable = true;
+        interactiveShellInit = ''
+          set fish_greeting # Disable greeting
+        '';
       };
 
       alacritty = {
+        # TODO: override package to use ligatures
+        # package = pkgs.alacritty-ligatures;
         enable = true;
         settings = {
           window = {
@@ -466,6 +487,38 @@ in {
               x = 16;
               y = 16;
             };
+          };
+          font = {
+            normal = {
+              family = "JetBrainsMono Nerd Font";
+            };
+          };
+          colors = {
+            primary = {
+              background = "0x1d1f21";
+              foreground = "0xc5c8c6";
+            };
+            normal = {
+              black = "0x424242";
+              red = "0xE27373";
+              green = "0x83C652";
+              yellow = "0xFFBA7B";
+              blue = "0x97BEDC";
+              magenta = "0xE1C0FA";
+              cyan = "0x00988E";
+              white = "0xDEDEDE";
+            };
+            bright = {
+              black = "0x676767";
+              red = "0xFFA1A1";
+              green = "0x98E86D";
+              yellow = "0xFFDCA0";
+              blue = "0xB1D8F6";
+              magenta = "0xFBDAFF";
+              cyan = "0x1AB2A8";
+              white = "0xFFFFFF";
+            };
+
           };
           shell.program = "fish";
         };
@@ -475,6 +528,26 @@ in {
         enable = true;
         userName = "Toby Selway";
         userEmail = "tobyselway@outlook.com";
+        package = pkgs.gitFull;
+        extraConfig.credential.helper = "${pkgs.gitAndTools.gitFull}/bin/git-credential-libsecret";
+      };
+
+      wlogout = {
+        enable = true;
+        layout = [
+          {
+            label = "shutdown";
+            action = "systemctl poweroff";
+            text = "Shutdown";
+            keybind = "s";
+          }
+        ];
+      };
+
+      neovim = {
+        enable = true;
+        viAlias = true;
+        vimAlias = true;
       };
 
       chromium = {
@@ -507,7 +580,7 @@ in {
     killall
     helvum
     easyeffects
-    polkit-kde-agent
+    polkit_gnome
     curl
     htop
     neofetch
@@ -515,11 +588,26 @@ in {
     hyprpaper
     wmctrl
     nnn
-    cinnamon.nemo
   ];
 
   # Polkit
   security.polkit.enable = true;
+
+  systemd = {
+    user.services.polkit-gnome-authentication-agent-1 = {
+      description = "polkit-gnome-authentication-agent-1";
+      wantedBy = [ "graphical-session.target" ];
+      wants = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
+      serviceConfig = {
+          Type = "simple";
+          ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+          Restart = "on-failure";
+          RestartSec = 1;
+          TimeoutStopSec = 10;
+        };
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
