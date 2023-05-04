@@ -420,6 +420,8 @@
       extraConfig.credential.helper = "${pkgs.gitAndTools.gitFull}/bin/git-credential-libsecret";
     };
 
+    gpg.enable = true;
+
     wlogout = {
       enable = true;
       layout = [
@@ -445,6 +447,16 @@
     vscode = {
       enable = true;
       package = pkgs.vscodium;
+    };
+
+  };
+
+  services = {
+
+    gpg-agent = {
+      enable = true;
+      enableSshSupport = true;
+      pinentryFlavor = "gtk2"; # Hyprland/Wayland
     };
 
   };
