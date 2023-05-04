@@ -154,7 +154,7 @@
 
   services = {
 
-    gnome3.gnome-keyring = {
+    gnome.gnome-keyring = {
       enable = true;
     };
 
