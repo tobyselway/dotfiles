@@ -144,10 +144,6 @@
     };
   };
 
-  services.gnome3.gnome-keyring = {
-    enable = true;
-  };
-
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -156,10 +152,15 @@
   #   enableSSHSupport = true;
   # };
 
-  # List services that you want to enable:
+  services = {
 
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+    gnome3.gnome-keyring = {
+      enable = true;
+    };
+
+    openssh.enable = true;
+
+  };
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];

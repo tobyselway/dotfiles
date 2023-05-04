@@ -16,65 +16,20 @@
 
     /* Fonts */
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+
+    /* Utils */
+    gnome3.seahorse
   ];
 
-  # Wofi
-  home.file."/home/toby/.config/wofi/style.css".text = ''
-    window {
-        margin: 0;
-        border: 0;
-        background-color: transparent;
-    }
+  home.file = {
+    ".config/wofi/style.css".source = ./configs/wofi/style.css;
+    #".vimrc".source = ./configs/.vimrc;
+    ".xprofile".text = ''
+      eval $(/run/wrappers/bin/gnome-keyring-daemon --start --daemonize)
+      export SSH_AUTH_SOCK
+    '';
+  };
 
-    #input {
-        padding: 8px 16px;
-        border: 4px solid #595959;
-        background-color: #202020;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        font-size: 16pt;
-        font-weight: 500;
-    }
-
-    #inner-box {
-        border: 0;
-        background-color: transparent;
-    }
-
-    #outer-box {
-        border: 0;
-        background-color: transparent;
-    }
-
-    #scroll {
-        margin: 0;
-        background-color: transparent;
-    }
-
-    #entry {
-        margin: 4px 0;
-        border-radius: 10px;
-        border: 2px solid #595959;
-        background-color: #202020;
-        padding: 12px 12px;
-    }
-
-    #entry:selected {
-        border: 2px solid #33ccff;
-    }
-
-    #text {
-        color: #888888;
-        font-size: 12pt;
-        font-weight: 500;
-        margin-left: 8px;
-    }
-
-    #text:selected {
-        color: #ffffff;
-    }
-
-  '';
 
   # Hyprland
   wayland.windowManager.hyprland = {
