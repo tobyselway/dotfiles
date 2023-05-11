@@ -13,6 +13,7 @@
     nodePackages.vue-cli
     php82
     php82Packages.composer
+    postman
 
     /* Fonts */
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
