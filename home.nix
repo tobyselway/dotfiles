@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, hyprland, ... }:
+{ config, pkgs, inputs, hyprland, nix-vscode-extensions, ... }:
 
 {
 
@@ -184,6 +184,24 @@
     vscode = {
       enable = true;
       package = pkgs.vscodium;
+      extensions = with nix-vscode-extensions.extensions.x86_64-linux.open-vsx; [
+        bbenoist.nix
+        jeanp413.open-remote-ssh
+        golang.go
+        fredhappyface.windowskeybindings
+      ];
+    };
+
+    ssh = {
+      enable = true;
+      matchBlocks = {
+        # SSH Hosts
+        box = {
+          hostname = "192.168.1.104";
+          forwardX11 = true;
+          forwardX11Trusted = true;
+        };
+      };
     };
 
   };
